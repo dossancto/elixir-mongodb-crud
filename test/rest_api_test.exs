@@ -126,5 +126,18 @@ defmodule RestApiTest do
 
       assert Mongo.find(:mongo, "Posts", %{}) |> Enum.count() == 1
     end
+
+    test "GET /posts/name/:name should return from a name" do
+      createPosts()
+
+      conn = conn(:get, "/posts/name/Post%201")
+      conn = RestApi.Router.call(conn, @opts)
+
+      assert %{
+               "id" => _,
+               "content" => "Content 1",
+               "name" => "Post 1"
+             } = Jason.decode!(conn.resp_body)
+    end
   end
 end

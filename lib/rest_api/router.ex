@@ -43,6 +43,27 @@ defmodule RestApi.Router do
     |> send_resp(200, posts)
   end
 
+  get "/posts/name/:name" do
+    doc = Mongo.find_one(:mongo, "Posts", %{name: name})
+
+    case doc do
+      nil ->
+        send_resp(conn, 404, "Not Found")
+
+      %{} ->
+        post =
+          JSON.normaliseMongoId(doc)
+          |> Jason.encode!()
+
+        conn
+        |> put_resp_content_type("application/json")
+        |> send_resp(200, post)
+
+      {:error, _} ->
+        send_resp(conn, 500, "something went wrong")
+    end
+  end
+
   post "/post" do
     case conn.body_params do
       %{"name" => name, "content" => content} ->
