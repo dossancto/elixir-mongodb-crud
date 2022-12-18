@@ -31,6 +31,10 @@ jobs:
         path: deps
         key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
         restore-keys: ${{ runner.os }}-mix-
+
+    - name: Start containers
+      run: docker-compose -f "docker-compose.yml" up -d --build
+
     - name: Install dependencies
       run: mix deps.get
     - name: Run tests
